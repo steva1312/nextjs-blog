@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Ubuntu } from "next/font/google";
 import "./styles/globals.css";
 
-const ubuntu = Ubuntu({ weight: "400", subsets: ["latin"] });
+const ubuntu = Ubuntu({ 
+  weight: ["300", "400", "500", "700" ], 
+  subsets: ["latin"] 
+});
 
 export const metadata: Metadata = {
   title: "Stevin Blog",
