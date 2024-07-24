@@ -7,7 +7,17 @@ export async function getAllBlogs() {
   return blogs;
 }
 
-export async function insertNewBlog(title: string, content: string) {
+export async function getBlog(id: number) {
+  const blog = await db.query.blogs.findFirst({
+    where: (model, { eq }) => eq(model.id, id)
+  });
+
+  if (!blog) throw new Error("Blog not found")
+
+  return blog;
+}
+
+export async function insertBlog(title: string, content: string) {
   await db.insert(blogs).values({
     title: title,
     content: content

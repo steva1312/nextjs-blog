@@ -1,5 +1,6 @@
 import Form from "@/components/form";
-import { getAllBlogs, insertNewBlog } from "@/server/queries";
+import { getAllBlogs, insertBlog } from "@/server/queries";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -14,15 +15,17 @@ export default async function Home() {
       <Form insertBlog={async (title: string, content: string) => {
         "use server";
 
-        await insertNewBlog(title, content);
+        await insertBlog(title, content);
       }} />
 
       <div className="mt-8 space-y-4">
         {blogs.map(blog => (
           <div key={blog.id}>
-            <div className="font-bold text-lg">{blog.title}</div>
-            <div>{blog.content}</div>
-          </div>
+              <Link href={`/blogs/${blog.id}`}>
+              <div className="font-bold text-lg">{blog.title}</div>
+              <div>{blog.content}</div>
+          </Link>
+            </div>
         ))}
       </div>
     </div>
