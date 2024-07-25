@@ -1,5 +1,6 @@
 "use client";
 
+import { insertBlog } from "@/server/queries";
 import { useRouter } from "next/navigation";
 import { FormEvent, useRef } from "react";
 
@@ -7,7 +8,7 @@ interface Props {
   insertBlog: (title: string, content: string) => Promise<void>
 }
 
-export default function Form({ insertBlog }: Props) {
+export default function Form() {
   const titleRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLInputElement>(null);
 
@@ -16,7 +17,7 @@ export default function Form({ insertBlog }: Props) {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
 
-    await insertBlog(titleRef.current!.value, contentRef.current!.value);
+    insertBlog(titleRef.current!.value, contentRef.current!.value);
 
     router.refresh();
   }
