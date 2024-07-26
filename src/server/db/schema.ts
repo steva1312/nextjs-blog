@@ -1,5 +1,4 @@
 import { sql } from "drizzle-orm";
-import { datetime } from "drizzle-orm/mysql-core";
 import {
   integer,
   pgTableCreator,
@@ -7,6 +6,8 @@ import {
   text,
   timestamp,
   varchar,
+  date,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 export const createTable = pgTableCreator((name) => `blog_${name}`);
@@ -14,18 +15,18 @@ export const createTable = pgTableCreator((name) => `blog_${name}`);
 export const users = createTable(
   "users",
   {
-    id: serial("id").primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey(),
     email: varchar("email", { length: 75}).unique().notNull(),
     fullName: varchar("full_name", { length: 50 }).notNull(),
-    hashedPassword: varchar("name", { length: 100 })
+    hashedPassword: varchar("hashed_password", { length: 100 })
   }
 );
 
 export const sessions = createTable(
   "sessions",
   {
-    id: serial("id").primaryKey(),
-    userId: integer("user_id").references(() => users.id).notNull(),
+    id: text("id").primaryKey(),
+    userId: uuid("user_id").references(() => users.id).notNull(),
     expiresAt: timestamp("expires_at").notNull()
   }
 );

@@ -1,17 +1,21 @@
 "use client";
 
+import { signIn } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 export const signInSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(6, "Password must be at least 6 characters long")
+  password: z.string().min(1, "Missing field")
 });
 
 export type SignInSchema = z.infer<typeof signInSchema>;
 
 export default function SignInForm() {
+  const router = useRouter();
+
   const { 
     register, 
     handleSubmit,
@@ -24,8 +28,14 @@ export default function SignInForm() {
     }
   });
 
-  function onSubmit(values: SignInSchema) {
-    console.log(values);
+  async function onSubmit(values: SignInSchema) {
+    const res = await signIn(values);
+
+    if (res.success) {
+      router.push('/profile');
+    } else {
+      alert(res.error);
+    }
   }
 
   return (

@@ -1,12 +1,13 @@
 "use client";
 
-import { signUp } from "@/app/auth/auth.actions";
+import { signUp } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 export const signUpSchema = z.object({
-  fullName: z.string().min(1, "Provide a name"),
+  fullName: z.string().min(1, "Missing field"),
   email: z.string().email(),
   password: z.string().min(6, "Password must be at least 6 characters long"),
   confirmPassword: z.string().min(6, "Password must be at least 6 characters long"),
@@ -18,6 +19,8 @@ export const signUpSchema = z.object({
 export type SignUpSchema = z.infer<typeof signUpSchema>;
 
 export default function SignUpForm() {
+  const router = useRouter();
+
   const { 
     register, 
     handleSubmit,
@@ -33,7 +36,13 @@ export default function SignUpForm() {
   });
 
   async function onSubmit(values: SignUpSchema) {
-    await signUp(values);
+    const res = await signUp(values);
+
+    if (res.success) {
+      router.push('/profile');
+    } else {
+      alert(res.error);
+    }
   }
 
   return (

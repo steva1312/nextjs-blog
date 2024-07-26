@@ -23,7 +23,7 @@ export default function Form() {
   }
 
   return (
-    <form onSubmit={e => onSubmit(e)} className="mt-8 flex flex-col w-[200px] space-y-4">
+    <form onSubmit={e => onSubmit(e)} className="flex flex-col w-[200px] space-y-4">
       <input ref={titleRef} name="title" className="border-black border-2" />
       <input ref={contentRef} name="content" className="border-black border-2" />
       <button className="bg-black text-white">Insert</button>
