@@ -7,7 +7,9 @@ import { db } from "@/server/db";
 import { users } from "@/server/db/schema";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { generateCodeVerifier, generateState } from "oslo/oauth2";
 import { Argon2id } from "oslo/password";
+import { googleAuth } from "./oauth";
 
 export async function signUp(values: SignUpSchema) {
   const existingUser = await db.query.users.findFirst({
@@ -89,4 +91,25 @@ export async function signOut() {
   const sessionCookie = lucia.createBlankSessionCookie();
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
   return redirect("/auth");
+}
+
+export async function getGoogleOAuthUrl() {
+  const state = generateState();
+  const codeVerifier = generateCodeVerifier();
+
+  cookies().set("google_oauth_state", state, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV == "production",
+  });
+
+  cookies().set("google_code_verifier", codeVerifier, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV == "production",
+  });
+
+  const authUrl = await googleAuth.createAuthorizationURL(state, codeVerifier, {
+    scopes: ["email", "profile"]
+  });
+
+  return authUrl.toString();
 }

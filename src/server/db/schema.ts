@@ -18,7 +18,8 @@ export const users = createTable(
     id: uuid("id").defaultRandom().primaryKey(),
     email: varchar("email", { length: 75}).unique().notNull(),
     fullName: varchar("full_name", { length: 50 }).notNull(),
-    hashedPassword: varchar("hashed_password", { length: 100 })
+    hashedPassword: varchar("hashed_password", { length: 100 }),
+    picture: varchar("picture", { length: 150 }),
   }
 );
 

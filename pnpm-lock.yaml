@@ -17,6 +17,9 @@ importers:
       '@vercel/postgres':
         specifier: ^0.9.0
         version: 0.9.0
+      arctic:
+        specifier: ^1.9.2
+        version: 1.9.2
       drizzle-orm:
         specifier: ^0.32.1
         version: 0.32.1(@neondatabase/serverless@0.9.4)(@types/pg@8.11.6)(@types/react@18.3.3)(@vercel/postgres@0.9.0)(postgres@3.4.4)(react@18.3.1)
@@ -780,6 +783,9 @@ packages:
   anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
     engines: {node: '>= 8'}
+
+  arctic@1.9.2:
+    resolution: {integrity: sha512-VTnGpYx+ypboJdNrWnK17WeD7zN/xSCHnpecd5QYsBfVZde/5i+7DJ1wrf/ioSDMiEjagXmyNWAE3V2C9f1hNg==}
 
   arg@5.0.2:
     resolution: {integrity: sha512-PYjyFOLKQ9y57JvQ6QLo8dAgNqswh8M1RMJYdQduT6xbWSgK36P/Z/v+p888pM69jMMfS8Xd8F6I1kQ/I9HUGg==}
@@ -2758,6 +2764,10 @@ snapshots:
     dependencies:
       normalize-path: 3.0.0
       picomatch: 2.3.1
+
+  arctic@1.9.2:
+    dependencies:
+      oslo: 1.2.0
 
   arg@5.0.2: {}
 

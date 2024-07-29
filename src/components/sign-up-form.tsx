@@ -46,7 +46,7 @@ export default function SignUpForm() {
   }
 
   return (
-    <div className="p-4 space-y-2">
+    <div className="space-y-2">
       <h1 className="text-xl font-bold">SIGN UP</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
