@@ -9,7 +9,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { generateCodeVerifier, generateState } from "oslo/oauth2";
 import { Argon2id } from "oslo/password";
-import { googleAuth } from "./oauth";
+import { githubAuth, googleAuth } from "./oauth";
 
 export async function signUp(values: SignUpSchema) {
   const existingUser = await db.query.users.findFirst({
@@ -109,6 +109,21 @@ export async function getGoogleOAuthUrl() {
 
   const authUrl = await googleAuth.createAuthorizationURL(state, codeVerifier, {
     scopes: ["email", "profile"]
+  });
+
+  return authUrl.toString();
+}
+
+export async function getGithubOAuthUrl() {
+  const state = generateState();
+
+  cookies().set("github_oauth_state", state, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV == "production",
+  });
+
+  const authUrl = await githubAuth.createAuthorizationURL(state, {
+    scopes: ["user:email"]
   });
 
   return authUrl.toString();
