@@ -49,9 +49,14 @@ export async function GET(req: NextRequest) {
     let userId: string;
 
     if (existingUser) {
+      if (existingUser.accountType !== "github") {
+        return new Response("This user doesn't use github sign in method", { status: 400 });
+      }
+
       userId = existingUser.id;
     } else {
       const [ user ] = await db.insert(users).values({
+        accountType: "github",
         fullName: githubData.name || githubData.login,
         email: githubData.email,
         picture: githubData.avatar_url

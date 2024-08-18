@@ -1,47 +1,45 @@
 "use client";
 
-import { signIn } from "@/lib/auth";
+import { forgotPassword } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-export const signInSchema = z.object({
+export const forgotPasswordSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(1, "Missing field")
 });
 
-export type SignInSchema = z.infer<typeof signInSchema>;
+export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 
-export default function SignInForm() {
+export default function ForgotPassword() {
   const router = useRouter();
 
   const { 
     register, 
     handleSubmit,
     formState: { errors, isSubmitting }
-  } = useForm<SignInSchema>({
-    resolver: zodResolver(signInSchema),
+  } = useForm<ForgotPasswordSchema>({
+    resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
-      password: "",
     }
   });
 
-  async function onSubmit(values: SignInSchema) {
-    const res = await signIn(values);
+  async function onSubmit(values: ForgotPasswordSchema) {
+    const res = await forgotPassword(values);
 
     if (res.success) {
-      router.push('/profile');
+      alert('mail sent');
     } else {
       alert(res.error);
     }
+
   }
 
   return (
-    <div className="space-y-2">
-      <h1 className="text-xl font-bold">SIGN IN</h1>
+    <div className="p-4 space-y-2">
+      <h1 className="text-xl font-bold">FORGOT PASSWORD</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
 
@@ -58,23 +56,8 @@ export default function SignInForm() {
           {errors.email && <p>{errors.email.message}</p>}
         </div>
 
-        <div className="flex items-center gap-2">
-          <label htmlFor="password">Password:</label>
-          <input 
-            {...register("password")} 
-            id="password" 
-            name="password" 
-            type="password"
-            placeholder="Enter you password"
-            className="border-black border-2 p-1"
-          />
-          {errors.password && <p>{errors.password.message}</p>} 
-        </div>
-
         <button disabled={isSubmitting} type="submit" className="self-start bg-black text-white p-2">Submit</button>
       </form>
-
-      <Link href="/auth/forgot-password" className="underline">Forgot password?</Link>
     </div>
   );
 }

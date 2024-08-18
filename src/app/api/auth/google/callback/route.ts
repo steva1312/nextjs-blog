@@ -3,7 +3,7 @@ import { googleAuth } from "@/lib/oauth";
 import { db } from "@/server/db";
 import { users } from "@/server/db/schema";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -17,6 +17,8 @@ export async function GET(req: NextRequest) {
   if (!code || !state || !codeVerifier || !savedState || state !== savedState) {
     return new Response("Invalid request", { status: 400 });
   }
+
+  let userId: string;
 
   try {
     const { accessToken } = await googleAuth.validateAuthorizationCode(code, codeVerifier);
@@ -38,12 +40,16 @@ export async function GET(req: NextRequest) {
       where: (model , { eq }) => eq(model.email, googleData.email) 
     });
 
-    let userId: string;
 
     if (existingUser) {
+      if (existingUser.accountType !== "google") {
+        return new Response("This user doesn't use google sign in method", { status: 400 });
+      }
+
       userId = existingUser.id;
     } else {
       const [ user ] = await db.insert(users).values({
+        accountType: "google",
         fullName: googleData.name,
         email: googleData.email,
         picture: googleData.picture
@@ -51,13 +57,15 @@ export async function GET(req: NextRequest) {
 
       userId = user.id;
     }
-
-    const session = await lucia.createSession(userId, {});
-    const sessionCookie = await lucia.createSessionCookie(session.id);
-    cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-
-    return redirect("/profile");
-  } catch {
+  } catch (e) {
+    console.log(e);
     return new Response("Invalid request", { status: 400 });
   }
+
+
+  const session = await lucia.createSession(userId, {});
+  const sessionCookie = await lucia.createSessionCookie(session.id);
+  cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+
+  return redirect("/profile");
 }

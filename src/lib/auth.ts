@@ -4,12 +4,16 @@ import { SignInSchema } from "@/components/sign-in-form";
 import { SignUpSchema } from "@/components/sign-up-form";
 import { lucia } from "@/lib/lucia";
 import { db } from "@/server/db";
-import { users } from "@/server/db/schema";
+import { resetTokens, users } from "@/server/db/schema";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { generateCodeVerifier, generateState } from "oslo/oauth2";
 import { Argon2id } from "oslo/password";
 import { githubAuth, googleAuth } from "./oauth";
+import { ForgotPasswordSchema } from "@/app/auth/forgot-password/page";
+import { eq } from "drizzle-orm";
+import { sendMail, MailData } from "./email";
+import { ResetPasswordSchema } from "@/app/auth/reset-password/page";
 
 export async function signUp(values: SignUpSchema) {
   const existingUser = await db.query.users.findFirst({
@@ -23,8 +27,9 @@ export async function signUp(values: SignUpSchema) {
   const hashedPassword = await new Argon2id().hash(values.password)
   
   const [ user ] = await db.insert(users).values({
-    fullName: values.fullName,
+    accountType: "email",
     email: values.email,
+    fullName: values.fullName,
     hashedPassword: hashedPassword
   }).returning();
 
@@ -44,11 +49,11 @@ export async function signIn(values: SignInSchema) {
     return { error: "User doesn't exist", success: false };
   }
 
-  if (!user.hashedPassword) { 
+  if (user.accountType !== "email") { 
     return { error: "This user doesn't use email and password sign in method", success: false };
   }
 
-  const passwordMatch = await new Argon2id().verify(user.hashedPassword, values.password);
+  const passwordMatch = await new Argon2id().verify(user.hashedPassword!, values.password);
 
   if (!passwordMatch) {
     return { error: "Invalid credentials", success: false };
@@ -127,4 +132,69 @@ export async function getGithubOAuthUrl() {
   });
 
   return authUrl.toString();
+}
+
+const TOKEN_EXPIRE_TIME = 1000 * 60 * 5; //5min
+
+//generates token and sends mail
+export async function forgotPassword(values: ForgotPasswordSchema) {
+  const tokenExpiresAt = new Date(Date.now() + TOKEN_EXPIRE_TIME);
+
+  const user = await db.query.users.findFirst({
+    where: (model, { eq }) => eq(model.email, values.email)
+  });
+
+  if (!user) {
+    return { error: "User not found", success: false };
+  }
+
+  if (user.accountType !== "email") { 
+    return { error: "This user doesn't use email and password sign in method", success: false };
+  }
+
+  //deletes previous token if user sends another email
+  await db.delete(resetTokens).where(eq(resetTokens.userId, user.id));
+
+  const [ token ] = await db.insert(resetTokens).values({
+    userId: user.id,
+    expiresAt: tokenExpiresAt,
+  }).returning();
+
+  const mailData: MailData = {
+    email: values.email,
+    subject: "Reset password",
+    html: `
+      Go to the following link to change your password: <a href="${process.env.NEXT_PUBLIC_URL}/auth/reset-password/?token=${token.id}">${process.env.NEXT_PUBLIC_URL}/auth/reset-password/?token=${token.id}</a>
+    `
+  };
+
+  await sendMail(mailData);
+
+  return { success: true };
+}
+
+export async function resetPassword(values: ResetPasswordSchema) {
+  const token = await db.query.resetTokens.findFirst({
+    where: (model, { eq }) => eq(model.id, values.token)
+  });
+
+  if (!token) {
+    return { error: "Invalid token", success: false };
+  }
+
+  if (token!.expiresAt < new Date(Date.now() - TOKEN_EXPIRE_TIME)) {
+    return { error: "Token expired", success: false };
+  }
+
+  const hashedPassword = await new Argon2id().hash(values.password)
+
+  await db.update(users)
+    .set({
+      hashedPassword: hashedPassword
+    })
+    .where(eq(users.id, token.userId));
+
+  await db.delete(resetTokens).where(eq(resetTokens.id, token.id));
+
+  return { success: true };
 }
