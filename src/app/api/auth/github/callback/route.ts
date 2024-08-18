@@ -59,7 +59,8 @@ export async function GET(req: NextRequest) {
         accountType: "github",
         fullName: githubData.name || githubData.login,
         email: githubData.email,
-        picture: githubData.avatar_url
+        picture: githubData.avatar_url,
+        verified: true
       }).returning();
 
       userId = user.id;

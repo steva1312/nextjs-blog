@@ -1,7 +1,10 @@
 "use client";
 
+import GithubOauthButton from "@/components/github-oauth-button";
+import GoogleOauthButton from "@/components/google-oauth-button";
 import { signUp } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,7 +21,7 @@ export const signUpSchema = z.object({
 
 export type SignUpSchema = z.infer<typeof signUpSchema>;
 
-export default function SignUpForm() {
+export default function SignUp() {
   const router = useRouter();
 
   const { 
@@ -39,14 +42,14 @@ export default function SignUpForm() {
     const res = await signUp(values);
 
     if (res.success) {
-      router.push('/profile');
+      alert("We sent you a mail to your email adress to verify it's you.")
     } else {
       alert(res.error);
     }
   }
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col items-start space-y-8 p-4">
       <h1 className="text-xl font-bold">SIGN UP</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
@@ -105,6 +108,11 @@ export default function SignUpForm() {
 
         <button disabled={isSubmitting} type="submit" className="self-start bg-black text-white p-2">Submit</button>
       </form>
+
+      <GoogleOauthButton />
+      <GithubOauthButton />
+
+      <Link href="/auth/sign-in" className="underline">Already have an account? Sign in here</Link>
     </div>
   );
 }

@@ -11,7 +11,7 @@ export default function GoogleOauthButton() {
 
   return (
     <button onClick={onClick} className="bg-black text-white text-lg p-2">
-      Sing in with Google
+      Continue with Google
     </button>
   );
 }

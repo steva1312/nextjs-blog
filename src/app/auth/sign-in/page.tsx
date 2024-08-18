@@ -1,5 +1,7 @@
 "use client";
 
+import GithubOauthButton from "@/components/github-oauth-button";
+import GoogleOauthButton from "@/components/google-oauth-button";
 import { signIn } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -40,7 +42,7 @@ export default function SignInForm() {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col items-start space-y-8 p-4">
       <h1 className="text-xl font-bold">SIGN IN</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
@@ -74,7 +76,11 @@ export default function SignInForm() {
         <button disabled={isSubmitting} type="submit" className="self-start bg-black text-white p-2">Submit</button>
       </form>
 
+      <GoogleOauthButton />
+      <GithubOauthButton />
+
       <Link href="/auth/forgot-password" className="underline">Forgot password?</Link>
+      <Link href="/auth/sign-up" className="underline">Don't have an account? Sign up here</Link>
     </div>
   );
 }

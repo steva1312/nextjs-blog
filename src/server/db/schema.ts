@@ -7,6 +7,7 @@ import {
   varchar,
   uuid,
   pgEnum,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 export const createTable = pgTableCreator((name) => `blog_${name}`);
@@ -22,6 +23,7 @@ export const users = createTable(
     fullName: varchar("full_name", { length: 50 }).notNull(),
     hashedPassword: varchar("hashed_password", { length: 100 }),
     picture: varchar("picture", { length: 150 }),
+    verified: boolean("verified").default(false),
   }
 );
 
@@ -30,6 +32,15 @@ export const sessions = createTable(
   {
     id: text("id").primaryKey(),
     userId: uuid("user_id").references(() => users.id).notNull(),
+    expiresAt: timestamp("expires_at").notNull()
+  }
+);
+
+export const verifyEmailTokens = createTable(
+  "verify_email_tokens", 
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id").references(() => users.id).unique().notNull(),
     expiresAt: timestamp("expires_at").notNull()
   }
 );

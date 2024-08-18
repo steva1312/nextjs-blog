@@ -52,7 +52,8 @@ export async function GET(req: NextRequest) {
         accountType: "google",
         fullName: googleData.name,
         email: googleData.email,
-        picture: googleData.picture
+        picture: googleData.picture,
+        verified: true
       }).returning();
 
       userId = user.id;

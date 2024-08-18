@@ -1,10 +1,8 @@
 "use server";
 
-import { SignInSchema } from "@/components/sign-in-form";
-import { SignUpSchema } from "@/components/sign-up-form";
 import { lucia } from "@/lib/lucia";
 import { db } from "@/server/db";
-import { resetTokens, users } from "@/server/db/schema";
+import { resetTokens, users, verifyEmailTokens } from "@/server/db/schema";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { generateCodeVerifier, generateState } from "oslo/oauth2";
@@ -14,6 +12,10 @@ import { ForgotPasswordSchema } from "@/app/auth/forgot-password/page";
 import { eq } from "drizzle-orm";
 import { sendMail, MailData } from "./email";
 import { ResetPasswordSchema } from "@/app/auth/reset-password/page";
+import { SignUpSchema } from "@/app/auth/sign-up/page";
+import { SignInSchema } from "@/app/auth/sign-in/page";
+
+const EMAIL_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; //7days
 
 export async function signUp(values: SignUpSchema) {
   const existingUser = await db.query.users.findFirst({
@@ -33,7 +35,54 @@ export async function signUp(values: SignUpSchema) {
     hashedPassword: hashedPassword
   }).returning();
 
-  const session = await lucia.createSession(user.id, {});
+  const tokenExpiresAt = new Date(Date.now() + EMAIL_TOKEN_EXPIRE_TIME);
+
+  const [ token ] = await db.insert(verifyEmailTokens).values({
+    userId: user.id,
+    expiresAt: tokenExpiresAt,
+  }).returning();
+
+  const mailData: MailData = {
+    email: values.email,
+    subject: "Verify Email Adress",
+    html: `
+      Go to the following link to verify your email adress: <a href="${process.env.NEXT_PUBLIC_URL}/api/auth/verify-email/?token=${token.id}">${process.env.NEXT_PUBLIC_URL}/api/auth/verify-email/?token=${token.id}</a>
+      <br>
+      This link expires in 7 days.
+    `
+  };
+
+  await sendMail(mailData);
+
+  return { success: true };
+}
+
+export async function verifyEmail(tokenId: string) {
+  if (!tokenId) {
+    return { error: "Invalid request", success: false };
+  }
+
+  const token = await db.query.verifyEmailTokens.findFirst({
+    where: (model, { eq }) => eq(model.id, tokenId)
+  });
+
+  if (!token) {
+    return { error: "Invalid request", success: false };
+  }
+
+  if (token!.expiresAt < new Date(Date.now() - EMAIL_TOKEN_EXPIRE_TIME)) {
+    return { error: "Link expired, try signing in and send receive another link", success: false } 
+  }
+
+  await db.update(users)
+    .set({
+      verified: true
+    })
+    .where(eq(users.id, token.userId));
+
+  await db.delete(verifyEmailTokens).where(eq(verifyEmailTokens.id, token.id));
+
+  const session = await lucia.createSession(token.userId, {});
   const sessionCookie = await lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
@@ -57,6 +106,10 @@ export async function signIn(values: SignInSchema) {
 
   if (!passwordMatch) {
     return { error: "Invalid credentials", success: false };
+  }
+
+  if (!user.verified) {
+    return { error: "Email adress is not verified yer! Check your mail to continue", success: false };
   }
 
   const session = await lucia.createSession(user.id, {});
@@ -95,7 +148,7 @@ export async function getUser() {
 export async function signOut() {
   const sessionCookie = lucia.createBlankSessionCookie();
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-  return redirect("/auth");
+  return redirect("/auth/sign-in");
 }
 
 export async function getGoogleOAuthUrl() {
@@ -134,12 +187,10 @@ export async function getGithubOAuthUrl() {
   return authUrl.toString();
 }
 
-const TOKEN_EXPIRE_TIME = 1000 * 60 * 5; //5min
+const PASSWORD_TOKEN_EXPIRE_TIME = 1000 * 60 * 5; //5min
 
 //generates token and sends mail
 export async function forgotPassword(values: ForgotPasswordSchema) {
-  const tokenExpiresAt = new Date(Date.now() + TOKEN_EXPIRE_TIME);
-
   const user = await db.query.users.findFirst({
     where: (model, { eq }) => eq(model.email, values.email)
   });
@@ -155,6 +206,8 @@ export async function forgotPassword(values: ForgotPasswordSchema) {
   //deletes previous token if user sends another email
   await db.delete(resetTokens).where(eq(resetTokens.userId, user.id));
 
+  const tokenExpiresAt = new Date(Date.now() + PASSWORD_TOKEN_EXPIRE_TIME);
+
   const [ token ] = await db.insert(resetTokens).values({
     userId: user.id,
     expiresAt: tokenExpiresAt,
@@ -162,9 +215,11 @@ export async function forgotPassword(values: ForgotPasswordSchema) {
 
   const mailData: MailData = {
     email: values.email,
-    subject: "Reset password",
+    subject: "Reset Password",
     html: `
       Go to the following link to change your password: <a href="${process.env.NEXT_PUBLIC_URL}/auth/reset-password/?token=${token.id}">${process.env.NEXT_PUBLIC_URL}/auth/reset-password/?token=${token.id}</a>
+      <br>
+      This link expires in 5 minutes.
     `
   };
 
@@ -182,7 +237,7 @@ export async function resetPassword(values: ResetPasswordSchema) {
     return { error: "Invalid token", success: false };
   }
 
-  if (token!.expiresAt < new Date(Date.now() - TOKEN_EXPIRE_TIME)) {
+  if (token!.expiresAt < new Date(Date.now() - PASSWORD_TOKEN_EXPIRE_TIME)) {
     return { error: "Token expired", success: false };
   }
 
