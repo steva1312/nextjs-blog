@@ -4,6 +4,6 @@
     "react/no-unescaped-entities": "off",
     "@typescript-eslint/quotes": "off",
     "avoidEscape": 0,
-    "allowTemplateLiterals": true
+    "allowTemplateLiterals": 0
   }
 }

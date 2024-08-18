@@ -8,12 +8,12 @@ import { redirect } from "next/navigation";
 import { generateCodeVerifier, generateState } from "oslo/oauth2";
 import { Argon2id } from "oslo/password";
 import { githubAuth, googleAuth } from "./oauth";
-import { ForgotPasswordSchema } from "@/app/auth/forgot-password/page";
+import { ForgotPasswordSchema } from "@/components/forgot-password-form";
 import { eq } from "drizzle-orm";
 import { sendMail, MailData } from "./email";
-import { ResetPasswordSchema } from "@/app/auth/reset-password/page";
-import { SignUpSchema } from "@/app/auth/sign-up/page";
-import { SignInSchema } from "@/app/auth/sign-in/page";
+import { ResetPasswordSchema } from "@/components/reset-password-form";
+import { SignUpSchema } from "@/components/sign-up-form";
+import { SignInSchema } from "@/components/sing-in-form";
 
 const EMAIL_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; //7days
 
