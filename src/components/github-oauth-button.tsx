@@ -1,17 +1,20 @@
 "use client";
 
 import { getGithubOAuthUrl } from "@/lib/auth";
+import { Button } from "./ui/button";
+import { ReactNode } from "react";
+import { RiGithubFill } from "@remixicon/react"
 
-export default function GithubOauthButton() {
-
+export default function GithubOauthButton({children} : {children: ReactNode}) {
   async function onClick() {
     const url = await getGithubOAuthUrl();
     window.location.href = url;
   }
 
   return (
-    <button onClick={onClick} className="bg-black text-white text-lg p-2">
-      Continue with Github
-    </button>
+    <Button className="p-5 text-md" onClick={onClick}>
+      <RiGithubFill className="w-6 h-6 mr-2" />
+      {children}
+    </Button>
   );
 }

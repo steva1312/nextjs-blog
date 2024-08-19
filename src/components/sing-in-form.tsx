@@ -1,13 +1,14 @@
 "use client";
 
-import GithubOauthButton from "@/components/github-oauth-button";
-import GoogleOauthButton from "@/components/google-oauth-button";
 import { signIn } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+import { Input } from "./ui/input";
 
 export const signInSchema = z.object({
   email: z.string().email(),
@@ -19,11 +20,7 @@ export type SignInSchema = z.infer<typeof signInSchema>;
 export default function SignInForm() {
   const router = useRouter();
 
-  const { 
-    register, 
-    handleSubmit,
-    formState: { errors, isSubmitting }
-  } = useForm<SignInSchema>({
+  const form = useForm<SignInSchema>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
@@ -42,35 +39,61 @@ export default function SignInForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+    <Card>
+      <CardHeader>
+        <CardTitle>Welcome back!</CardTitle>
+        <CardDescription className="text-base">Log in to continue</CardDescription>
+      </CardHeader>
 
-      <div className="flex items-center gap-2">
-        <label htmlFor="email">Email:</label>
-        <input 
-          {...register("email")} 
-          id="email" 
-          name="email" 
-          type="text" 
-          placeholder="Enter you email"
-          className="border-black border-2 p-1"
-        />
-        {errors.email && <p>{errors.email.message}</p>}
-      </div>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field} 
+                      placeholder="Enter your mail..." 
+                      className="text-base"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-      <div className="flex items-center gap-2">
-        <label htmlFor="password">Password:</label>
-        <input 
-          {...register("password")} 
-          id="password" 
-          name="password" 
-          type="password"
-          placeholder="Enter you password"
-          className="border-black border-2 p-1"
-        />
-        {errors.password && <p>{errors.password.message}</p>} 
-      </div>
-
-      <button disabled={isSubmitting} type="submit" className="self-start bg-black text-white p-2">Submit</button>
-    </form>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input 
+                      {...field} 
+                      type="password"
+                      onChange={e => {
+                        e.target.value = e.target.value.trim();
+                        field.onChange(e);
+                      }}
+                      placeholder="Enter your password..."
+                      className="text-base"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <Button disabled={form.formState.isSubmitting} type="submit" className="self-start mt-2">Sign In</Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
+    
   );
 }

@@ -8,10 +8,11 @@ export default function SignIn() {
     <div className="flex flex-col items-start space-y-8 p-4">
       <h1 className="text-xl font-bold">SIGN UP</h1>
       <SignInForm />
-      <GoogleOauthButton />
-      <GithubOauthButton />
+      <GoogleOauthButton>Continue with Google</GoogleOauthButton>
+      <GithubOauthButton>Continue with GitHub</GithubOauthButton>
 
-      <Link href="/auth/sign-in" className="underline">Already have an account? Sign in here</Link>
+      <Link href="/auth/sign-up" className="underline">Don't have an account? Sign up here</Link>
+      <Link href="/auth/forgot-password" className="underline">Forgot password?</Link>
     </div>
   );
 }
