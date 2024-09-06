@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
     return new Response(null, {
       status: 302,
       headers: {
-        Location: "/profile"
+        Location: "/profile?succMsg=Successfuly signed in."
       }
     });
   } catch {

@@ -1,11 +1,12 @@
 "use client";
 
 import { signOut } from "@/lib/auth";
+import { Button } from "./ui/button";
 
 export default function SignOutButton() {
   return (
-    <button className="bg-black text-white text-lg p-2" onClick={() => signOut()}>
+    <Button className="text-base" onClick={() => signOut()}>
       Sign out
-    </button>
+    </Button>
   );
 }

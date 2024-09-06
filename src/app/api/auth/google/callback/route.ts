@@ -68,5 +68,5 @@ export async function GET(req: NextRequest) {
   const sessionCookie = await lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
 
-  return redirect("/profile");
+  return redirect("/profile?succMsg=Successfuly signed in.");
 }

@@ -3,8 +3,16 @@ import GoogleOauthButton from "@/components/google-oauth-button";
 import SignUpForm from "@/components/sign-up-form";
 import SignInForm from "@/components/sing-in-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function Auth() {
+export default async function Auth() {
+  const user = await getUser();
+
+  if (user) {
+    redirect("/profile");
+  }
+
   return (
     <div className="flex flex-col items-center justify-center h-screen gap-10">
       <div className="flex flex-col w-[400px] mt-5 gap-2">

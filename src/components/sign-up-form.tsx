@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
+import { toast } from "react-hot-toast";
 
 export const signUpSchema = z.object({
   fullName: z.string().min(1, "Missing field"),
@@ -36,13 +37,13 @@ export default function SignUpForm() {
   });
 
   async function onSubmit(values: SignUpSchema) {
-    const res = await signUp(values);
+    const res = signUp(values);
 
-    if (res.success) {
-      alert("We sent you a mail to your email adress to verify it's you.")
-    } else {
-      alert(res.error);
-    }
+    toast.promise(res, {
+      loading: "Sending email...",
+      success: "We sent you a mail to your email adress to verify it's you.",
+      error: "Something went wrong."
+    })
   }
 
   return (
@@ -61,7 +62,7 @@ export default function SignUpForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel  className="text-base">Email</FormLabel>
                   <FormControl>
                     <Input 
                       {...field} 
@@ -79,7 +80,7 @@ export default function SignUpForm() {
               name="fullName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full name</FormLabel>
+                  <FormLabel  className="text-base">Full name</FormLabel>
                   <FormControl>
                     <Input 
                       {...field} 
@@ -97,7 +98,7 @@ export default function SignUpForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel  className="text-base">Password</FormLabel>
                   <FormControl>
                     <Input 
                       {...field} 
@@ -120,7 +121,7 @@ export default function SignUpForm() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm assword</FormLabel>
+                  <FormLabel  className="text-base">Confirm assword</FormLabel>
                   <FormControl>
                     <Input 
                       {...field} 
@@ -138,7 +139,7 @@ export default function SignUpForm() {
               )}
             />
 
-            <Button disabled={form.formState.isSubmitting} type="submit" className="self-start mt-2">Submit</Button>
+            <Button disabled={form.formState.isSubmitting} type="submit" className="text-base self-start mt-2">Submit</Button>
           </form>
         </Form>
       </CardContent>

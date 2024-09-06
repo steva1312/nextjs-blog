@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Ubuntu } from "next/font/google";
+import { Toaster } from "react-hot-toast"
 import "./styles/globals.css";
 
 const ubuntu = Ubuntu({ 
@@ -19,7 +20,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={ubuntu.className}>{children}</body>
+      <body className={ubuntu.className}>
+        <Toaster position="bottom-right" toastOptions={{duration: 8000}} />
+
+        <main>
+          {children}
+        </main>
+      </body>
     </html>
   );
 }

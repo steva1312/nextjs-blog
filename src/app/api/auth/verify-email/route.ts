@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   const res = await verifyEmail(token);
 
   if (res.success) {
-    return redirect("/profile");
+    return redirect("/profile?succMsg=Successfuly created account.");
   }
   
   return new Response(res.error, { status: 400 });

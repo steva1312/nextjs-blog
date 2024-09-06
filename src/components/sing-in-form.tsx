@@ -9,6 +9,7 @@ import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
+import { toast } from "react-hot-toast";
 
 export const signInSchema = z.object({
   email: z.string().email(),
@@ -32,9 +33,9 @@ export default function SignInForm() {
     const res = await signIn(values);
 
     if (res.success) {
-      router.push('/profile');
+      router.push("/profile?succMsg=Successfuly signed in.");
     } else {
-      alert(res.error);
+      toast.error(res.error!);
     }
   }
 
@@ -53,7 +54,7 @@ export default function SignInForm() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-base">Email</FormLabel>
                   <FormControl>
                     <Input 
                       {...field} 
@@ -71,7 +72,7 @@ export default function SignInForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-base">Password</FormLabel>
                   <FormControl>
                     <Input 
                       {...field} 
@@ -89,7 +90,7 @@ export default function SignInForm() {
               )}
             />
             
-            <Button disabled={form.formState.isSubmitting} type="submit" className="self-start mt-2">Sign In</Button>
+            <Button disabled={form.formState.isSubmitting} type="submit" className="text-base self-start mt-2">Sign In</Button>
           </form>
         </Form>
       </CardContent>

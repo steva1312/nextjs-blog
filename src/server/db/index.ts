@@ -1,6 +1,15 @@
-import { drizzle } from "drizzle-orm/vercel-postgres"
-import { sql } from "@vercel/postgres"
+//dev
+import * as postgresjs from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+
+//production
+import * as vercelPostgres from "drizzle-orm/vercel-postgres";
+import * as vercel from "@vercel/postgres";
 
 import * as schema from "./schema";
 
-export const db = drizzle(sql, { schema });
+const dev = postgresjs.drizzle(postgres(process.env.POSTGRES_URL!), { schema });
+
+const prod = vercelPostgres.drizzle(vercel.sql, { schema });
+
+export const db = process.env.PRODUCTION ? prod : dev;

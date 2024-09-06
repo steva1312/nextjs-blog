@@ -148,7 +148,7 @@ export async function getUser() {
 export async function signOut() {
   const sessionCookie = lucia.createBlankSessionCookie();
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-  return redirect("/auth/sign-in");
+  return redirect("/auth");
 }
 
 export async function getGoogleOAuthUrl() {
