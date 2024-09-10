@@ -12,7 +12,7 @@ export default function GithubOauthButton({children} : {children: ReactNode}) {
   }
 
   return (
-    <Button className="p-5 text-md" onClick={onClick}>
+    <Button variant="black" className="p-5 text-md" onClick={onClick}>
       <RiGithubFill className="w-6 h-6 mr-2" />
       {children}
     </Button>

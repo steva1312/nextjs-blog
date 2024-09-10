@@ -1,11 +1,47 @@
 import type { Metadata } from "next";
-import { Ubuntu } from "next/font/google";
-import { Toaster } from "react-hot-toast"
+import { Toaster } from "react-hot-toast";
+import localFont from "next/font/local";
 import "./styles/globals.css";
 
-const ubuntu = Ubuntu({ 
-  weight: ["300", "400", "500", "700" ], 
-  subsets: ["latin"] 
+const ubuntu = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Ubuntu-Light.ttf",
+      weight: "300"
+    },
+    {
+      path: "../../public/fonts/Ubuntu-Regular.ttf",
+      weight: "400"
+    },
+    {
+      path: "../../public/fonts/Ubuntu-Medium.ttf",
+      weight: "500"
+    },
+    {
+      path: "../../public/fonts/Ubuntu-Bold.ttf",
+      weight: "700"
+    },
+    {
+      path: "../../public/fonts/Ubuntu-LightItalic.ttf",
+      weight: "300",
+      style: "italic"
+    },
+    {
+      path: "../../public/fonts/Ubuntu-Italic.ttf",
+      weight: "400",
+      style: "italic"
+    },
+    {
+      path: "../../public/fonts/Ubuntu-MediumItalic.ttf",
+      weight: "500",
+      style: "italic"
+    },
+    {
+      path: "../../public/fonts/Ubuntu-BoldItalic.ttf",
+      weight: "700",
+      style: "italic"
+    },
+  ]
 });
 
 export const metadata: Metadata = {

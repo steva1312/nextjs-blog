@@ -2,7 +2,6 @@
 
 import { signUp } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "./ui/button";
@@ -24,7 +23,6 @@ export const signUpSchema = z.object({
 export type SignUpSchema = z.infer<typeof signUpSchema>;
 
 export default function SignUpForm() {
-  const router = useRouter();
 
   const form = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
@@ -43,7 +41,7 @@ export default function SignUpForm() {
       loading: "Sending email...",
       success: "We sent you a mail to your email adress to verify it's you.",
       error: "Something went wrong."
-    })
+    });
   }
 
   return (
@@ -139,7 +137,7 @@ export default function SignUpForm() {
               )}
             />
 
-            <Button disabled={form.formState.isSubmitting} type="submit" className="text-base self-start mt-2">Submit</Button>
+            <Button variant="black" disabled={form.formState.isSubmitting} type="submit" className="text-base self-start mt-2">Submit</Button>
           </form>
         </Form>
       </CardContent>

@@ -57,9 +57,10 @@ export const resetTokens = createTable(
 export const blogs = createTable(
   "blogs",
   {
-    id: serial("id").primaryKey(),
+    id: uuid("id").defaultRandom().primaryKey(),
     title: varchar("title", { length: 256 }).notNull(),
     content: text("content").notNull(),
+    userId: uuid("user_id").references(() => users.id).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),

@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 
@@ -10,7 +10,6 @@ export default function PopMessage() {
   useEffect(() => {
     if (message) toast.success(message);
   }, [])
-
 
   return (
     <></>

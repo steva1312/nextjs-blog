@@ -90,7 +90,7 @@ export default function SignInForm() {
               )}
             />
             
-            <Button disabled={form.formState.isSubmitting} type="submit" className="text-base self-start mt-2">Sign In</Button>
+            <Button variant="black" disabled={form.formState.isSubmitting} type="submit" className="text-base self-start mt-2">Sign In</Button>
           </form>
         </Form>
       </CardContent>

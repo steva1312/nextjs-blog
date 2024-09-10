@@ -16,7 +16,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 0 70%, 35%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -46,6 +46,7 @@
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
+    --black: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
@@ -72,4 +73,18 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+nav ul li a {
+  @apply relative;
+}
+
+nav ul li a::after {
+  content: "";
+  transition: all ease-in .2s;
+  @apply absolute w-0 h-[3px] left-0 bottom-[-3px] bg-primary rounded-full;
+}
+
+nav ul li a:hover::after {
+  @apply w-full;
 }

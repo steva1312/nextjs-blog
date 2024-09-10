@@ -13,7 +13,7 @@ export default function GoogleOauthButton({children} : {children: ReactNode}) {
   }
 
   return (
-    <Button className="p-5 text-md" onClick={onClick}>
+    <Button variant="black" className="p-5 text-md" onClick={onClick}>
       <RiGoogleFill className="w-5 h-5 mr-2" />
       {children}
     </Button>
