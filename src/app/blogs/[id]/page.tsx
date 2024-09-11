@@ -5,9 +5,7 @@ export default async function Blog({
 }: {
   params: { id: string }
 }) {
-  const idAsNumber = Number(blogId);
-
-  const blog = await getBlog(idAsNumber);
+  const blog = await getBlog(blogId);
 
   return (
     <div>
