@@ -1,16 +1,10 @@
 "use client";
 
 import { forgotPassword } from "@/lib/auth";
+import { ForgotPasswordSchema, forgotPasswordSchema } from "@/lib/zod-schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-export const forgotPasswordSchema = z.object({
-  email: z.string().email(),
-});
-
-export type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordForm() {
   const router = useRouter();

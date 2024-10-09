@@ -8,6 +8,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -82,7 +86,7 @@ nav ul li a {
 nav ul li a::after {
   content: "";
   transition: all ease-in .2s;
-  @apply absolute w-0 h-[3px] left-0 bottom-[-3px] bg-primary rounded-full;
+  @apply absolute w-0 h-[2px] left-0 bottom-[-3px] bg-primary rounded-full;
 }
 
 nav ul li a:hover::after {

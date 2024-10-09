@@ -8,12 +8,9 @@ import { redirect } from "next/navigation";
 import { generateCodeVerifier, generateState } from "oslo/oauth2";
 import { Argon2id } from "oslo/password";
 import { githubAuth, googleAuth } from "./oauth";
-import { ForgotPasswordSchema } from "@/components/forgot-password-form";
 import { eq } from "drizzle-orm";
 import { sendMail, MailData } from "./email";
-import { ResetPasswordSchema } from "@/components/reset-password-form";
-import { SignUpSchema } from "@/components/sign-up-form";
-import { SignInSchema } from "@/components/sing-in-form";
+import { ForgotPasswordSchema, ResetPasswordSchema, SignInSchema, SignUpSchema } from "./zod-schemas";
 
 const EMAIL_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7; //7days
 
@@ -23,7 +20,7 @@ export async function signUp(values: SignUpSchema) {
   });
 
   if (existingUser) {
-    return { error: "User already exists", success: false }; 
+    throw new Error("User already exists");
   }
 
   const hashedPassword = await new Argon2id().hash(values.password)
@@ -53,8 +50,6 @@ export async function signUp(values: SignUpSchema) {
   };
 
   await sendMail(mailData);
-
-  return { success: true };
 }
 
 export async function verifyEmail(tokenId: string) {
@@ -95,28 +90,26 @@ export async function signIn(values: SignInSchema) {
   });
   
   if (!user) { 
-    return { error: "User doesn't exist", success: false };
+    throw new Error("User doesn't exist");
   }
 
   if (user.accountType !== "email") { 
-    return { error: "This user doesn't use email and password sign in method", success: false };
+    throw new Error("This user doesn't use email and password sign in method");
   }
 
   const passwordMatch = await new Argon2id().verify(user.hashedPassword!, values.password);
 
   if (!passwordMatch) {
-    return { error: "Invalid credentials", success: false };
+    throw new Error("Invalid credentials");
   }
 
   if (!user.verified) {
-    return { error: "Email adress is not verified yer! Check your mail to continue", success: false };
+    throw new Error("Email adress is not verified yer! Check your mail to continue");
   }
 
   const session = await lucia.createSession(user.id, {});
   const sessionCookie = await lucia.createSessionCookie(session.id);
   cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-
-  return { success: true };
 }
 
 export async function getUser() {

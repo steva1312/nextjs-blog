@@ -8,6 +8,7 @@ import {
   uuid,
   pgEnum,
   boolean,
+  integer
 } from "drizzle-orm/pg-core";
 
 export const createTable = pgTableCreator((name) => `blog_${name}`);
@@ -21,9 +22,11 @@ export const users = createTable(
     email: varchar("email", { length: 75}).unique().notNull(),
     accountType: accountTypeEnum("account_type").notNull(),
     fullName: varchar("full_name", { length: 50 }).notNull(),
+    description: varchar("description", { length: 200 }),
     hashedPassword: varchar("hashed_password", { length: 100 }),
     picture: varchar("picture", { length: 150 }),
     verified: boolean("verified").default(false),
+    createdAt: timestamp("created_at", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
   }
 );
 
@@ -61,9 +64,17 @@ export const blogs = createTable(
     title: varchar("title", { length: 256 }).notNull(),
     content: text("content").notNull(),
     userId: uuid("user_id").references(() => users.id).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }),
+  }
+);
+
+export const likes = createTable(
+  "likes",
+  {
+    id: serial("id").primaryKey(),
+    userId: uuid("user_id").references(() => users.id).notNull(),
+    blogId: uuid("blog_id").references(() => blogs.id).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).default(sql`CURRENT_TIMESTAMP`).notNull(),
   }
 );

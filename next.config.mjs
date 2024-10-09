@@ -12,6 +12,9 @@ const nextConfig = {
       },
       {
         hostname: "avatars.githubusercontent.com"
+      },
+      {
+        hostname: "bloggy-steva.s3.us-east-1.amazonaws.com"
       }
     ]
   }

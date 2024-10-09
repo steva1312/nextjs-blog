@@ -4,19 +4,12 @@ import { signIn } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { toast } from "react-hot-toast";
-
-export const signInSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1, "Missing field")
-});
-
-export type SignInSchema = z.infer<typeof signInSchema>;
+import { signInSchema, SignInSchema } from "@/lib/zod-schemas";
 
 export default function SignInForm() {
   const router = useRouter();
@@ -30,13 +23,16 @@ export default function SignInForm() {
   });
 
   async function onSubmit(values: SignInSchema) {
-    const res = await signIn(values);
+    const res = signIn(values);
 
-    if (res.success) {
-      router.push("/profile?succMsg=Successfuly signed in.");
-    } else {
-      toast.error(res.error!);
-    }
+    toast.promise(res, {
+      loading: "Signing in...",
+      success: () => {
+        router.push("/profile");
+        return "Successfuly signed in.";
+      },
+      error: (err) => `${err}`.split("Error: ")[1]
+    });
   }
 
   return (
@@ -82,7 +78,7 @@ export default function SignInForm() {
                         field.onChange(e);
                       }}
                       placeholder="Enter your password..."
-                      className="text-base"
+                      className="text-sm"
                     />
                   </FormControl>
                   <FormMessage />

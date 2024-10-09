@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 import localFont from "next/font/local";
 import "./styles/globals.css";
+import Header from "@/components/header";
 
 const ubuntu = localFont({
   src: [
@@ -60,6 +61,7 @@ export default function RootLayout({
         <Toaster position="bottom-right" toastOptions={{duration: 8000}} />
 
         <main>
+          <Header />
           {children}
         </main>
       </body>

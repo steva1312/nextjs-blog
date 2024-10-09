@@ -8,7 +8,7 @@ import * as vercel from "@vercel/postgres";
 
 import * as schema from "./schema";
 
-const dev = postgresjs.drizzle(postgres(process.env.POSTGRES_URL!), { schema });
+const dev = postgresjs.drizzle(postgres(process.env.POSTGRES_URL!, { max: 1000 }), { schema });
 
 const prod = vercelPostgres.drizzle(vercel.sql, { schema });
 

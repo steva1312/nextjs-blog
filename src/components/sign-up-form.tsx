@@ -3,24 +3,12 @@
 import { signUp } from "@/lib/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "./ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "./ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { toast } from "react-hot-toast";
-
-export const signUpSchema = z.object({
-  fullName: z.string().min(1, "Missing field"),
-  email: z.string().email(),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
-  confirmPassword: z.string().min(6, "Password must be at least 6 characters long"),
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"]
-});
-
-export type SignUpSchema = z.infer<typeof signUpSchema>;
+import { signUpSchema, SignUpSchema } from "@/lib/zod-schemas";
 
 export default function SignUpForm() {
 
@@ -40,7 +28,7 @@ export default function SignUpForm() {
     toast.promise(res, {
       loading: "Sending email...",
       success: "We sent you a mail to your email adress to verify it's you.",
-      error: "Something went wrong."
+      error: (err) => `${err}`.split("Error: ")[1]
     });
   }
 
@@ -106,7 +94,7 @@ export default function SignUpForm() {
                         field.onChange(e);
                       }}
                       placeholder="Enter your password..."
-                      className="text-base"
+                      className="text-sm"
                     />
                   </FormControl>
                   <FormMessage />
@@ -129,7 +117,7 @@ export default function SignUpForm() {
                         field.onChange(e);
                       }}
                       placeholder="Confirm your password..."
-                      className="text-base"
+                      className="text-sm"
                     />
                   </FormControl>
                   <FormMessage />

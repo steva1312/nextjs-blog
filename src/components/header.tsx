@@ -16,7 +16,7 @@ export default async function Header() {
       <nav className="absolute top-1/2 left-1/2 -translate-x-1/2">
         <ul className="flex gap-8">
           <li><Link href="/about" className="text-lg">About</Link></li>
-          <li><Link href="/blogs" className="text-lg">Blogs</Link></li>
+          <li><Link href="/about" className="text-lg">Contact</Link></li>
         </ul>
       </nav>
 
